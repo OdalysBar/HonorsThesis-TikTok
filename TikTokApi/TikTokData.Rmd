@@ -1,0 +1,229 @@
+---
+title: "TikTok Data"
+output: html_notebook
+---
+
+```{r}
+#setwd("~/Documents/HonorsThesis/HonThesis-OdalysBar/extract-from-odalyss-list/data")
+library(anytime)
+
+
+#install.packages("reticulate")
+library(reticulate)
+use_python("/Users/odalysbar/opt/anaconda3/bin/python")
+getwd()
+```
+
+```{python}
+import numpy as np
+import pickle 
+import pandas as pd
+```
+
+# Famous User: addisonre
+```{r}
+library(readr)
+#addisonre <- read_csv("/Users/odalysbar/Documents/HonorsThesis/transCSSR-master/TikTokApi/HonThesis-OdalysBar/extract-from-odalyss-list/FamousUsersCSV/addisonre.csv")
+
+#View(addisonre)
+#addisonre
+```
+
+```{r}
+# timestamps <- rev(addisonre$createTime) # oldest to earliest time
+# hist(timestamps,breaks =100) # unixtime in sec
+# 
+# timemin <- timestamps/60 # unixtime in min
+# hist(timemin, breaks = 100)
+# 
+# timehr <- timemin/60 # unixtime in hours
+# hist(timehr, breaks = 100)
+```
+```{r}
+# frequency of time between post in min
+# hist(diff(timemin),breaks="FD",xlim= c(0,10000), ylim = c(0,200))
+
+# frequency of time between post in hours
+# hist(diff(timehr),breaks="FD",xlim= c(0,10000/60), ylim = c(0,200))
+```
+# Attempt 1: Binary sequence 
+```{r}
+# head(timemin)
+# tail(timemin)
+
+# interval <- 30
+# time.old <- timemin[1]
+# time.new <- timemin[1] + interval
+# binary <- vector()
+# i <- 1
+# last <- length(timemin) # 1363
+# 
+# while(time.new <= timemin[last]){ # after time.new = the last time we want to stop looking
+# 
+#   index <- which(timemin <= time.new & timemin > time.old) # which times are in the interval of 10 min
+#   if(sum(index) == 0){ # if there are no values on the interval
+#     binary[i] <- 0 # 0 = not avtive
+#   }else{
+#     binary[i] <- 1 # 1 = active
+#   }
+#   time.old <- time.new # replace new time with old
+#   time.new <- time.new + interval # add 10 min to new time
+#   i <- i + 1  # we will repeat with a new interval of 10min
+# }
+
+# binary
+# sum(binary)
+# length(binary)
+
+# sum(binary)/length(binary)
+```
+# Attempt 2: Binary sequence
+```{r}
+# 1. Binary sequence as vector ex: 0,1,0,0,1
+
+# 2. Binary sequence as list 
+  # where there should be the a 1 there are the index of post that were posted at the time interval we are looking as 
+  # ex: 0,2,0,5,0,0 <--- as list
+
+# start.time <- min(timemin)
+# end.time <- max(timemin)
+# interval <- 30
+# 
+# newtime <- start.time + interval
+# bins <- c(start.time, newtime)
+# i <- 3
+# while(newtime <= end.time + interval){
+#   bins[i] <- newtime + interval
+#   newtime <- bins[i]
+#   i <- i + 1
+# }
+# # bins
+# 
+# index <- vector()
+# #index <- list()
+# for(i in 1:(length(bins)-1)){
+#   if(sum(which(timemin <= bins[i+1] & timemin > bins[i]))==0){
+#     index[i] <- 0
+#     #index[[i]] <- 0
+#   }else{
+#     index[i] <- 1 
+#     #index[[i]]<-c(which(timemin <= bins[i+1] & timemin > bins[i]))
+#   }
+# }
+# #index
+# sum(index)/length(index)
+```
+# Attempt 3: Binary Sequence
+```{r}
+# bin.num <- ((timemin-min(timemin))%/%30)+1
+# #bin.num
+# 
+# binary.seq <- c(rep(0,length.out=max(bin.num)))
+# 
+# binary.seq[bin.num] <- 1
+# binary.seq
+# 
+# sum(binary.seq)/length(binary.seq)
+```
+
+# Converting Unix time to Binary Sequence 
+```{r}
+# time intervals of min
+jan1.18 <- 1546318800/60 # start time
+april13.21 <- 26971697 # end time 
+
+# time = data, all the timestamps 
+# interval = will create the bins (ex: 30 min intervals)
+convert.binary.seq <- function(time, interval, starttime = jan1.18 , endtime = april13.21){
+  max.bins <- round((endtime -starttime)/interval) 
+  # this give us back the total number of bins to have 
+  bin.num <- ((time-starttime)%/%interval)+1
+  
+  binary.seq <- c(rep(0,length.out=max.bins)) # creating a vector of 0s
+  binary.seq[bin.num] <- 1 # putting a 1 in the bin where the user was active 
+  return(binary.seq) # returns a binary sequence (vector) of 0s and 1s
+}
+
+```
+
+
+```{r}
+# this function automatically changed unixtime in sec to unixtime in min
+# start and end time must be in min
+
+save.binseq <- function(starttime = jan1.18, endtime = april13.21) {
+  weeks <- 118 # number of weeks in our data collection
+  matrix <- matrix(NA, nrow=weeks, ncol=336) # 336 30 min intervals in a week 
+  # matrix "out" will hold 0s and 1s for the given user
+  # rows are weeks and columns are the 30 intervals
+  user.index <- c(1:136)
+  # this vector will be used when saving the plots and individual matrix
+  list.out <- list() # list that will contain string of 0 and 1s for each user
+  usersdata.time <- Sys.glob("HonThesis-OdalysBar/extract-from-odalyss-list/timestamps/*")
+  for(i in 1:length(usersdata.time)){ # from the first to last user
+    my_data <- read.delim(usersdata.time[i],header = FALSE)$V1/60
+    # importing user timestamps & converting sec to min
+    my_data <- my_data[which(my_data >= starttime)] 
+    # removing data from before Jan 1 2018
+    bin.seq <-convert.binary.seq(my_data, interval = 30, starttime = starttime , endtime = endtime) # converting timestamps to binary series
+    
+    endweek <- 336 # there are 336 30 min intervals in a week 
+    begweek <- 1  
+    for (n in 1:weeks){ 
+      # separating binary seq into weeks from week 1 to week 118
+      matrix[n,] <- bin.seq[begweek:endweek] 
+      # creating a matrix to see the data week by week
+      endweek <- endweek + 336
+      begweek <- begweek + 336
+    }
+  user.index <- c(1:136)
+  #write.table(matrix, file=sprintf("matrix-%s.txt", user.index[i]), row.names=FALSE, col.names=FALSE)
+  # ^^ code above used to save the indivual matrix 
+  
+  
+  list.out[[i]] <- matrix # saving bin seq matrix into a list
+  }
+  return(list(weeklymatrix.users = list.out, users = usersdata.time))
+}
+# USED TO SAVE TXT FILES
+# for each use with the binary seq
+# split.string <- strsplit(data.time[i], "/")[[1]][4] # to find user name
+# username <- strsplit(split.string, "_timestamps")[[1]][1] # to find user name
+# write.table(list(tmp), file = paste0("seq", "_", username, ".txt")) # saving binary seq as txt file
+  
+  
+# 168 hours in 1 week so 169*2 = 336 for 30min intervals
+# 52 weeks in 1 year
+# our data is roughly 2 years 3 months and 2 weeks
+# 52*2+3*4+2 = 118 weeks/ rows 
+list.out <- save.binseq(starttime = jan1.18, endtime = april13.21)
+```
+
+
+```{r}
+list.out$users[136]
+```
+
+```{r,fig.height=12, fig.width=16}
+num <- c(1:136)
+graphics.off()
+
+for(i in 1:136){
+#for(i in c(1)){ 
+  X <-list.out$weeklymatrix.users[[i]]
+  xrev <- apply(X,2,rev)
+  
+  #jpeg(sprintf("rasterplots-%s.jpeg", num[i]),width=1000, height = 800)
+  par(mfrow=c(2,1))
+  image(t(xrev)) # plot with dots
+  plot(colMeans(X, na.rm = TRUE), type= "l") # plot with lines
+  
+  dev.off()
+}
+
+
+```
+
+
+
+
