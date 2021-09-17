@@ -143,7 +143,6 @@ convert.binary.seq <- function(time, interval, starttime = jan1.18 , endtime = a
   binary.seq[bin.num] <- 1 # putting a 1 in the bin where the user was active 
   return(binary.seq) # returns a binary sequence (vector) of 0s and 1s
 }
-
 ```
 
 
@@ -153,37 +152,64 @@ convert.binary.seq <- function(time, interval, starttime = jan1.18 , endtime = a
 
 save.binseq <- function(starttime = jan1.18, endtime = april13.21) {
   weeks <- 118 # number of weeks in our data collection
-  matrix <- matrix(NA, nrow=weeks, ncol=336) # 336 30 min intervals in a week 
-  # matrix "out" will hold 0s and 1s for the given user
+  intervals <- 336
+  matrix <- matrix(NA, nrow=weeks, ncol=intervals) # maxtrix with spaces
+  # 336 30 min intervals in a week 
+  # matrix will hold 0s and 1s for the given user
   # rows are weeks and columns are the 30 intervals
+  matrix.nospaces <- matrix(NA, nrow=weeks, ncol=1)
+  mat.logistic.reg <- matrix(NA, nrow=2, ncol=weeks*intervals) 
+  mat.logistic.reg[2,] <- rep(1:336, 118)
+  
   user.index <- c(1:136)
   # this vector will be used when saving the plots and individual matrix
-  list.out <- list() # list that will contain string of 0 and 1s for each user
-  usersdata.time <- Sys.glob("HonThesis-OdalysBar/extract-from-odalyss-list/timestamps/*")
+  
+  list.out <- list() # list that will contain all the matrices (136 matrices) 
+  list.matintervals <- list()
+  
+  usersdata.time <-Sys.glob("HonThesis-OdalysBar/extract-from-odalyss-list/timestamps/*")
+  
   for(i in 1:length(usersdata.time)){ # from the first to last user
+  #for(i in c(1)){  
+    # DATA CLEANING
     my_data <- read.delim(usersdata.time[i],header = FALSE)$V1/60
     # importing user timestamps & converting sec to min
     my_data <- my_data[which(my_data >= starttime)] 
     # removing data from before Jan 1 2018
-    bin.seq <-convert.binary.seq(my_data, interval = 30, starttime = starttime , endtime = endtime) # converting timestamps to binary series
     
+    # Converting unix timestamps into a binary sequence
+    bin.seq <-convert.binary.seq(my_data, interval = 30, starttime = starttime , endtime = endtime) 
+    
+    # Preparing to save binary time stamps into matrix called "matrix"
+    # we will save this matrix going week by week, every 336 time intervals 
     endweek <- 336 # there are 336 30 min intervals in a week 
     begweek <- 1  
+    string.binary <- vector()
+    
+    
     for (n in 1:weeks){ 
+    
       # separating binary seq into weeks from week 1 to week 118
-      matrix[n,] <- bin.seq[begweek:endweek] 
       # creating a matrix to see the data week by week
+      matrix[n, ] <- bin.seq[begweek:endweek]
+      mat.logistic.reg[1,begweek:endweek] <- bin.seq[begweek:endweek]
+      # cleaning matrix.nospaces so there are no spaces between 0s and 1s 
+      string.binary[n] <- paste0(matrix[n,], collapse = "")
+  
+      # moving on to the following week 
       endweek <- endweek + 336
       begweek <- begweek + 336
     }
-  user.index <- c(1:136)
-  #write.table(matrix, file=sprintf("matrix-%s.txt", user.index[i]), row.names=FALSE, col.names=FALSE)
-  # ^^ code above used to save the indivual matrix 
-  
+ 
+    # ///////////SAVE OUT DATA///////////
+    # writeLines(string.binary,  "outfile.txt")
+    # write.table(matrix, file=sprintf("matrix-%s.txt", user.index[i]), row.names=FALSE, col.names=FALSE)
+    # write.table(mat.log, file=sprintf("matlogistic-%s.txt", user.index[i]), row.names=FALSE, col.names=FALSE)
   
   list.out[[i]] <- matrix # saving bin seq matrix into a list
+  list.matintervals[[i]] <- mat.logistic.reg # saving bin seq matrix into a list
   }
-  return(list(weeklymatrix.users = list.out, users = usersdata.time))
+  return(list(weeklymatrix.users = list.out, users = usersdata.time, matrixbyintervals = list.matintervals))
 }
 # USED TO SAVE TXT FILES
 # for each use with the binary seq
@@ -196,12 +222,123 @@ save.binseq <- function(starttime = jan1.18, endtime = april13.21) {
 # 52 weeks in 1 year
 # our data is roughly 2 years 3 months and 2 weeks
 # 52*2+3*4+2 = 118 weeks/ rows 
+
+```
+
+Figuring out how to use writeLines()
+```{r}
+# matrix1 <- list.out$weeklymatrix.users[1]
+# matrix1.longstring <- paste0(matrix1[[1]][1,])
+# matrix1.longstring
+# paste(matrix1.longstring, collapse = "")
+# writeLines(matrix1.longstring, con = stdout(), sep = " ",)]
+
+# txt <- c("Hallo", "World", "Odalys")
+# writeLines(txt, "outfile.txt")
+```
+
+
+logistic regression matrices
+```{r}
 list.out <- save.binseq(starttime = jan1.18, endtime = april13.21)
+
+mat.log <- list.out$matrixbyintervals
+
+mat2 <- mat.log[[2]] # the matrix of the second user 
+mat100 <- mat.log[[100]]
+```
+
+
+```{r,fig.height=12, fig.width=16}
+num <- c(1:136)
+graphics.off()
+X <-list.out$matrixbyintervals
+
+for(i in 1:136){
+# for(i in c(2, 100)){ 
+  
+  activity <- X[[i]][1,]
+  clock <- X[[i]][2,]
+
+  jpeg(sprintf("smoothlogit-%s.jpeg", num[i]),width=1000, height = 800)
+  par(mfrow=c(2,1))
+  plot(smooth.spline(clock, activity), type = "l")
+  active.smooth <- gam(activity ~ s(clock), family = binomial)
+  plot(predict(active.smooth, type = "response"), xlim = c(1, 336))
+  
+  dev.off()
+}
+
+```
+
+```{r}
+active <- mat2[1,]
+clock <- mat2[2,]
+
+plot(clock, active)
+lines(smooth.spline(clock, active))
+plot(smooth.spline(clock, active), type = "l")
+
+active100 <- mat100[1,]
+clock100 <- mat100[2,]
+
+plot(clock100, active100)
+lines(smooth.spline(clock100, active100))
+plot(smooth.spline(clock100, active100), type = "l")
+```
+
+```{r}
+# install.packages("mgcv")
+library(mgcv)
+
+active.smooth <- gam(active ~ s(clock), family = binomial)
+plot(predict(active.smooth, type = "response"), xlim = c(1, 2*336))
+
+active.smooth100 <- gam(active100 ~ s(clock100), family = binomial)
+plot(predict(active.smooth100, type = "response"), xlim = c(1, 2*336))
+```
+
+```{r}
+# figuring out each user's first and last active time 
+
+list.out <- save.binseq(starttime = jan1.18, endtime = april13.21)
+mat.log <- list.out$matrixbyintervals
+
+activeIntervals <- vector()
+firstactiveInterval <- vector()
+lastactiveInterval <- vector()
+users <- c(1:133, 135, 136)
+
+for(i in users){
+#for(i in c(1,2)){
+  mat <- mat.log[[i]]
+  activeIntervals <- which(mat[1,] == 1)
+  #show(activeIntervals)
+  firstactiveInterval[i] <- activeIntervals[1]
+  #show(firstactiveInterval)
+  lastactiveInterval[i] <- activeIntervals[length(activeIntervals)]
+  #show(lastactiveInterval)
+}
+firstactiveInterval
+favstats(firstactiveInterval)
+lastactiveInterval
+favstats(lastactiveInterval)
+```
+```{r}
+hist(firstactiveInterval)
+rug(firstactiveInterval)
+```
+```{r}
+hist(lastactiveInterval)
+rug(lastactiveInterval)
+```
+```{r}
+plot(firstactiveInterval, 39648-lastactiveInterval)
 ```
 
 
 ```{r}
-list.out$users[136]
+list.out$users[1]
 ```
 
 ```{r,fig.height=12, fig.width=16}
@@ -220,7 +357,6 @@ for(i in 1:136){
   
   dev.off()
 }
-
 
 ```
 
