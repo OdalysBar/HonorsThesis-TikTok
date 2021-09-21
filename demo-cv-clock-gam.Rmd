@@ -1,0 +1,84 @@
+---
+title: "Demo Choosing Smoothing Parameter for `gam()` Using Cross-validation"
+author: "David Darmon"
+date: "21 September 2021"
+---
+
+# Set Up Parallel Cluster for Faster Computation
+
+```{r}
+# install.packages('doParallel')
+
+library(doParallel)
+cl <- makeCluster(8)
+registerDoParallel(cl)
+```
+
+# Load in One User's Data to Demonstrate
+
+```{r}
+which.user <- 31
+
+# Read in by-week data as data.frame.
+
+dat <- read.table(sprintf('BinSeq-MatrixWSpaces/matrix-%g.txt', which.user), sep = ' ', header = FALSE)
+
+# Convert to matrix
+
+dat <- data.matrix(dat)
+
+# Take transpose to make column-oriented (one week per column), so 
+# can flatten easily into long vector.
+
+Y <- t(dat)
+
+# Flatten matrix to long vector.
+
+dim(Y) <- NULL
+
+# Get out design points as clock times.
+
+x <- rep(1:ncol(dat), nrow(dat))
+```
+
+# Show Activity Over Time and Within Weeks
+
+```{r}
+par(mfrow = c(1, 2))
+
+plot(Y, pch = 16, cex = 0.1)
+plot(x, Y, pch = 16, cex = 0.1)
+```
+
+# Select Smoothing Parameter Using Cross-validation
+
+```{r}
+library(gam)
+```
+
+```{r}
+source('cv-clock-gam.R')
+
+cv.out <- cv.clock.gam(dat)
+```
+
+# Show Cross-validated Negative Log-likelihood as a Function of the Smoothing Parameter
+
+```{r, warning = FALSE}
+plot(cv.out$spars, cv.out$negative.LLs)
+abline(v = cv.out$spar.star)
+```
+
+# Fit the GAM at the Optimal Smoothing Parameter
+
+```{r, warning = FALSE}
+mod <- gam(Y ~ s(x, spar = cv.out$spar.star), family = binomial)
+
+plot(predict(mod, type = 'response')[1:ncol(dat)], type = 'l', ylim = c(0, 0.2),
+     xlab = 'Time (1/2 Hour Segments)', ylab = 'Probability User is Active')
+points(x, Y*0.2, pch = 16, cex = 0.1)
+
+# Add smoothing spline fit via least-squares for comparison
+lines(smooth.spline(x, Y), col = 'red', lty = 2)
+```
+
