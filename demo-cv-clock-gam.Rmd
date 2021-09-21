@@ -65,7 +65,9 @@ cv.out <- cv.clock.gam(dat)
 # Show Cross-validated Negative Log-likelihood as a Function of the Smoothing Parameter
 
 ```{r, warning = FALSE}
-plot(cv.out$spars, cv.out$negative.LLs)
+plot(cv.out$spars, cv.out$negative.LLs, 
+     xlab = 'Smoothing Parameter',
+     ylab = 'CV-ed Negative Log-Likelihood')
 abline(v = cv.out$spar.star)
 ```
 
