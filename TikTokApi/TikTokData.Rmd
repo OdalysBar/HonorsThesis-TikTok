@@ -128,6 +128,10 @@ library(readr)
 
 ```{r}
 source("DataCollectionFun.R")
+
+jan1.18 <- 1546318800/60 # start time
+april13.21 <- 26971697 # end time 
+
 ```
 
 Figuring out how to use writeLines()
@@ -163,15 +167,16 @@ num <- c(1:136)
 # graphics.off()
 X <-list.out$matrixbyintervals
 
-for(i in 1:136){
-# for(i in c(2, 100)){ 
+# for(i in 1:136){
+for(i in c(1)){ 
   
   activity <- X[[i]][1,]
   clock <- X[[i]][2,]
 
   # jpeg(sprintf("smoothlogit-%s.jpeg", num[i]),width=1000, height = 800)
   par(mfrow=c(2,1))
-  plot(smooth.spline(clock, activity), type = "l")
+  plot(smooth.spline(clock, activity, df=150), type = "l", ylim=c(0,1))
+  points(clock, activity)
   active.smooth <- gam(activity ~ s(clock), family = binomial)
   plot(predict(active.smooth, type = "response"), xlim = c(1, 336))
   
