@@ -30,7 +30,7 @@ convert.binary.seq <- function(time, interval, starttime, endtime){
 #' save.binseq() is a function that will save the binary sequence data in different 
 #' formats of all the TikTok users 
 #' 
-#' @param starttime
+#' 
 #'
 #'
 save.binseq <- function(starttime , endtime) {
@@ -83,8 +83,8 @@ save.binseq <- function(starttime , endtime) {
     # write.table(matrix, file=sprintf("matrix-%s.txt", user.index[i]), row.names=FALSE, col.names=FALSE)
     # write.table(mat.log, file=sprintf("matlogistic-%s.txt", user.index[i]), row.names=FALSE, col.names=FALSE)
     
-    matrix.spaces[[i]] <- matrix # saving bin seq matrix into a list
-    matrix.logit[[i]] <- mat.logistic.reg # saving bin seq matrix into a list
+    list.out[[i]] <- matrix # saving bin seq matrix into a list
+    list.matintervals[[i]] <- mat.logistic.reg # saving bin seq matrix into a list
   }
-  return(list(weeklymatrix.users = matrix.spaces, users = usersdata.time, matrixbyintervals = matrix.logit))
+  return(list(weeklymatrix.users = list.out, users = usersdata.time, matrixbyintervals = list.matintervals))
 }

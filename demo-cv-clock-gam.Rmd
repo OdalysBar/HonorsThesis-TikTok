@@ -17,7 +17,7 @@ registerDoParallel(cl)
 # Load in One User's Data to Demonstrate
 
 ```{r}
-which.user <- 31
+which.user <- 1
 
 # Read in by-week data as data.frame.
 

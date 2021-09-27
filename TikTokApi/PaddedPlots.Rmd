@@ -1,0 +1,59 @@
+---
+title: "Honors Thesis: Padding Plots"
+author: Odalys
+output: html_notebook
+---
+
+```{r}
+source("DataCollectionFun.R")
+
+jan1.18 <- 25771980 # start time in min
+april13.21 <- 26971697 # end time in min
+```
+
+```{r}
+# usersdata <- save.binseq(starttime = jan1.18, endtime = april13.21)
+
+user1 <- usersdata$matrixbyintervals[[1]]
+
+weeks <- 118-2 # we are losing the first and last week
+intervals <- 336 + 48 + 48 # we are repeating Sunday and Monday each week (additional 96 hrs)
+pad.mat <- matrix(data = NA, nrow=weeks, ncol=intervals)
+
+# starting and ending point from the logistic matrices saved 
+start.int <- 336 - 48 # starting from first Sunday
+start.int
+end.int <- start.int + 336 + 48 +47 # from first sunday + the whole week mon:sun + mon week 2
+end.int
+end.int-start.int
+
+sun1 <- 1
+mon2 <- intervals
+# pad.mat[1,sun1:mon2] <- user1[1,start.int:end.int]
+# 
+# 
+# user1[1,start.int:end.int]
+# pad.mat[1,sun1:mon2]
+# 
+# start.int <- start.int + 336
+# end.int <- start.int + 336 + 48 +47 
+# end.int-start.int
+# pad.mat[2,sun1:mon2] <- user1[1,start.int:end.int]
+list <- list()
+
+for(n in 1:136){
+  start.int <- 336 - 48 # starting from first Sunday
+  end.int <- start.int + 336 + 48 +47 
+  user1 <- usersdata$matrixbyintervals[[n]]
+for(i in 1:weeks){
+  
+  pad.mat[i,sun1:mon2] <- user1[1,start.int:end.int]
+  
+  start.int <- start.int + 336
+  end.int <- start.int + 336 + 48 +47 
+}
+  list[[n]] <- pad.mat
+  }
+
+```
+
