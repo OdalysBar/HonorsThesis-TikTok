@@ -1,0 +1,30 @@
+digraph  {
+size = "6,8.5";
+ratio = "fill";
+node
+[shape = circle];
+node [fontsize = 24];
+node [penwidth = 5];
+edge [fontsize = 24];
+node [fontname = "CMU Serif Roman"];
+graph [fontname = "CMU Serif Roman"];
+edge [fontname = "CMU Serif Roman"];
+A -> A [label = "0|0:0.963302752293578\l"];
+A -> C [label = "1|0:0.03669724770642202\l"];
+B -> A [label = "0|0:0.3333333333333333\l"];
+B -> B [label = "1|0:0.6666666666666666\l"];
+C -> I [label = "1|0:0.058823529411764705\l"];
+C -> J [label = "0|0:0.9411764705882353\l"];
+D -> A [label = "0|0:0.975609756097561\l"];
+D -> K [label = "1|0:0.024390243902439025\l"];
+E -> D [label = "0|0:1.0\l"];
+F -> E [label = "0|0:1.0\l"];
+G -> B [label = "0|0:0.3333333333333333\l"];
+G -> G [label = "1|0:0.6666666666666666\l"];
+H -> G [label = "1|0:1.0\l"];
+I -> A [label = "0|0:0.9\l"];
+I -> H [label = "1|0:0.1\l"];
+J -> D [label = "0|0:0.975609756097561\l"];
+J -> F [label = "1|0:0.024390243902439025\l"];
+K -> J [label = "0|0:1.0\l"];
+}

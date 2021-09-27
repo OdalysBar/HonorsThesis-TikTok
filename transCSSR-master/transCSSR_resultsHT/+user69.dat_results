@@ -1,0 +1,42 @@
+State number: 0
+0000, 0000
+0000, 1000
+00000, 00000
+00000, 01000
+00000, 10000
+distribution: 
+P(0|0,state) = 0.999823317095333	
+P(1|0,state) = 0.00017668290466695273	
+transitions: T((0, 0)) = 0	T((0, 1)) = 3	
+P(State) = ...
+
+State number: 1
+0000, 0100
+00000, 00100
+distribution: 
+P(0|0,state) = 0.875	
+P(1|0,state) = 0.125	
+transitions: T((0, 0)) = 0	T((0, 1)) = 3	
+P(State) = ...
+
+State number: 2
+0000, 0010
+00000, 00010
+00000, 10010
+distribution: 
+P(0|0,state) = 1.0	
+P(1|0,state) = 0.0	
+transitions: T((0, 0)) = 1	T((0, 1)) = NULL	
+P(State) = ...
+
+State number: 3
+0000, 0001
+0000, 1001
+00000, 00001
+00000, 01001
+distribution: 
+P(0|0,state) = 1.0	
+P(1|0,state) = 0.0	
+transitions: T((0, 0)) = 2	T((0, 1)) = NULL	
+P(State) = ...
+
