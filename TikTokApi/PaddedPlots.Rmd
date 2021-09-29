@@ -12,7 +12,7 @@ april13.21 <- 26971697 # end time in min
 ```
 
 ```{r}
-# usersdata <- save.binseq(starttime = jan1.18, endtime = april13.21)
+#usersdata <- save.binseq(starttime = jan1.18, endtime = april13.21)
 
 user1 <- usersdata$matrixbyintervals[[1]]
 
@@ -23,7 +23,7 @@ pad.mat <- matrix(data = NA, nrow=weeks, ncol=intervals)
 # starting and ending point from the logistic matrices saved 
 start.int <- 336 - 48 # starting from first Sunday
 start.int
-end.int <- start.int + 336 + 48 +47 # from first sunday + the whole week mon:sun + mon week 2
+end.int <- start.int + 336 + 48 + 47 # from first sunday + the whole week mon:sun + mon week 2
 end.int
 end.int-start.int
 
@@ -55,5 +55,19 @@ for(i in 1:weeks){
   list[[n]] <- pad.mat
   }
 
+```
+
+# Checking 
+```{r}
+prop.correct <- vector()
+for(n in 1:136){
+check <- vector()
+for(i in 1:115){
+check[i] <- sum(list[[n]][i,(432-96):432])/96 == sum(list[[n]][(i+1),1:96])/96
+prop.correct[n] <- sum(check)/length(check)
+}}
+prop.correct
+
+min(prop.correct)
 ```
 
