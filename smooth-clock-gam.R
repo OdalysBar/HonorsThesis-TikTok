@@ -26,7 +26,7 @@ x <- rep(1:ncol(dat), nrow(dat))
 
 
 source('cv-clock-gam.R')
-cv.out <- cv.clock.gam(dat)
+cv.out <- cv.clock.gam(dat, spars=seq(0,1.6,by=0.05))
 
 graphics.off()
 jpeg(sprintf("smoothparam-%s.jpeg", i),width=1000, height = 800)

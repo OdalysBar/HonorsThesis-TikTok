@@ -63,11 +63,14 @@ prop.correct <- vector()
 for(n in 1:136){
 check <- vector()
 for(i in 1:115){
-check[i] <- sum(list[[n]][i,(432-96):432])/96 == sum(list[[n]][(i+1),1:96])/96
+# check[i] <- sum(list[[n]][i,(432-96):432])/96 == sum(list[[n]][(i+1),1:96])/96
+  check[i] <- sum(list[[n]][i,(432-95):432] == list[[n]][(i+1),1:96])
 prop.correct[n] <- sum(check)/length(check)
+#show(sum(list[[n]][i,(432-96):432])/96)
 }}
 prop.correct
 
 min(prop.correct)
+mean(prop.correct)
 ```
 
