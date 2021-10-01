@@ -25,6 +25,10 @@ cv.clock.gam <- function(dat, fold.size = 26, spars = seq(0, 0.8, by = 0.05)){
   D <- t(dat) # Make data column-oriented since R stores matrices
               # in a column-oriented fashion.
   
+  # Create design points for one week's worth of time.
+  
+  clock.ticks <- 1:ncol(dat)
+  
   # Create placeholder for the negative log-likelihoods of the data.
   
   Ls <- rep(0, length(spars))
@@ -43,8 +47,9 @@ cv.clock.gam <- function(dat, fold.size = 26, spars = seq(0, 0.8, by = 0.05)){
     
     # Create design points for clock.
     
-    x.out <- rep(1:ncol(dat), ncol(Y.out))
-    x.in  <- rep(1:ncol(dat), ncol(Y.in))
+    x.out <- rep(clock.ticks, ncol(Y.out))
+    x.in  <- rep(clock.ticks, ncol(Y.in))
+
     
     # Flatten the matrices to a flat vector.
     
@@ -83,5 +88,5 @@ cv.clock.gam <- function(dat, fold.size = 26, spars = seq(0, 0.8, by = 0.05)){
   
   spar.star <- spars[L.star]
   
-  return(list(spar.star = spar.star, spars = spars, negative.LLs = Ls))
+  return(list(spar.star = spar.star, spars = spars, negative.LLs = Ls, clock.ticks = clock.ticks))
 }
