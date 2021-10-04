@@ -6,7 +6,7 @@ date: "21 September 2021"
 
 # Set Up Parallel Cluster for Faster Computation
 
-```{r}
+```{r, message = FALSE}
 # install.packages('doParallel')
 
 library(doParallel)
