@@ -2,11 +2,11 @@ a. Comparison Across Types of User Groups:
 
 Over the next week (10/11 - 10/18)
 
-	1. Match the user number to user handle.
+	1. Match the user number to user handle. @done
 
 	2. Redo transCSSR with model selection for the L parameter.
 
-	3. Split the data into a training and a testing set.
+	3. Split the data into a training and a testing set. @sortadone
 
 		80% of weeks for training and 20% of weeks for testing.
 

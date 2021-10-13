@@ -3,8 +3,8 @@ State number: 0
 0, 0
 0, 1
 distribution: 
-P(0|0,state) = 0.456	
-P(1|0,state) = 0.544	
+P(0|0,state) = 0.9979822437449556	
+P(1|0,state) = 0.0020177562550443904	
 transitions: T((0, 0)) = 0	T((0, 1)) = 0	
 P(State) = ...
 
