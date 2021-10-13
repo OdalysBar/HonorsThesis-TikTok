@@ -1,0 +1,45 @@
+---
+title: "Saving Usernames to User IDs"
+author: Odalys Barrientos
+output: html_notebook
+---
+
+```{r}
+usersdata.time <-Sys.glob("HonThesis-OdalysBar/extract-from-odalyss-list/timestamps/*")
+usernames <- vector()
+for(i in 1:136){
+#for(i in c(1)){
+  user <- usersdata.time[i]
+  split1 <- strsplit(user, "/")
+  name <- split1[[1]][4]
+  split2 <- strsplit(name, "_timestamps.txt")
+  usernames[i] <- split2[[1]][1]
+}
+usernames
+ 
+UserIDs <- data.frame(ID = c(1:136), username = usernames, category = NA)
+UserIDs
+
+```
+
+```{r}
+library("readr")
+fam1 <- read_tsv("HonThesis-OdalysBar/extract-from-odalyss-list/famous-users-1.txt" ,col_names=FALSE)
+fam2 <- read_tsv("HonThesis-OdalysBar/extract-from-odalyss-list/famous-users-2.txt" ,col_names=FALSE)
+viral <- read_tsv("HonThesis-OdalysBar/extract-from-odalyss-list/viral-users.txt" ,col_names=FALSE)
+foryou <- read_tsv("HonThesis-OdalysBar/extract-from-odalyss-list/foryouusers.txt" ,col_names=FALSE)
+
+```
+```{r}
+# for(i in 1:39){
+#     index <- which(UserIDs$username == as.character(foryou[i,]))
+#     UserIDs$category[index] <- "ForYou"
+#     
+# }
+View(UserIDs)
+
+UserIDs$category[99] <- "ForYou"
+
+#write.csv(UserIDs,"UserIDs.csv", row.names = TRUE)
+```
+
