@@ -6,19 +6,20 @@ Over the next week (10/11 - 10/18)
 
 	2. Redo transCSSR with model selection for the L parameter.
 
-	3. Split the data into a training and a testing set. @sortadone
+	3. Split the data into a training and a testing set. @done
 
 		80% of weeks for training and 20% of weeks for testing.
 
 		104 weeks (two years) for training and 14 weeks for testing
 
 	4. Train the models for both epsilon-machine and seasonal on the training set.
+		- @done for seasonal
 
 (10/18-10/25)
 
 	5. Get out probabilities from the models evaluated on the testing set.
 
-		Get this for free from the GAM.
+		Get this for free from the GAM. @done
 
 		Get this from transCSSR.
 			Dave will show Odalys how to do this.
