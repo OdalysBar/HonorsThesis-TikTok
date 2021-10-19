@@ -1,0 +1,94 @@
+---
+title: "GAM Training Model"
+author: Odalys Barrientos
+output: html_notebook
+---
+
+```{r}
+library(doParallel)
+library(gam)
+library(readr)
+source('cv-clock-gam.R')
+cl <- makeCluster(8)
+registerDoParallel(cl)
+getwd()
+```
+
+```{r}
+# Load in One User's Data to Demonstrate
+
+for(i in 1:136){
+#for(i in c(1)){
+which.user <- i
+
+# Read in by-week data as data.frame.
+dat <- read.table(sprintf('/Users/odalysbar/Documents/HonorsThesis/HonorsThesis-TikTok/BinSeq-MatrixWSpaces/matrix-%g.txt', which.user), sep = ' ', header = FALSE)
+
+# Convert to matrix
+dat <- data.matrix(dat)
+
+# Take transpose to make column-oriented (one week per column), so 
+# can flatten easily into long vector.
+Y <- t(dat)
+
+# Flatten matrix to long vector.
+dim(Y) <- NULL
+
+# Get out design points as clock times.
+x <- rep(1:ncol(dat), nrow(dat))
+
+
+cv.out <- cv.clock.gam(dat)
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+## Pad the data
+prepost.pad.amount <- 48
+
+dat.padded <- cbind(matrix(0, nrow = nrow(dat), ncol = prepost.pad.amount),
+                    dat,
+                    matrix(0, nrow = nrow(dat), ncol = prepost.pad.amount))
+
+dat.padded[2:nrow(dat.padded), 1:(prepost.pad.amount)] <- 
+  dat[1:(nrow(dat)-1), (ncol(dat) - prepost.pad.amount + 1):ncol(dat)]
+
+dat.padded[1:(nrow(dat.padded)-1), (ncol(dat.padded)-prepost.pad.amount + 1):ncol(dat.padded)] <-
+  dat[2:(nrow(dat.padded)), 1:prepost.pad.amount]
+
+# Drop first and last week, since 0-padded:
+dat.padded <- dat.padded[2:(nrow(dat.padded) - 1), ]
+
+Y.padded <- t(dat.padded)
+
+dim(Y.padded) <- NULL
+
+Y.padded <- Y.padded[1:44496] # 44496 intervals = 103 weeks of data
+dat.padded <- dat.padded[1:103,]
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#
+
+## Fit the Model and Plot
+cv.out <- cv.clock.gam(dat.padded)
+
+x.wrapped <- rep(cv.out$clock.ticks, nrow(dat.padded))
+
+mod.padded <- gam(Y.padded ~ s(x.wrapped, spar = cv.out$spar.star), family = binomial)
+
+graphics.off()
+jpeg(sprintf("GAMTrain-%s.jpeg", which.user),width=1000, height = 500)
+plot(predict(mod.padded, type = 'response')[(1+prepost.pad.amount):(ncol(dat.padded) - prepost.pad.amount)], type = 'l', ylim = c(0, 0.2),
+     xlab = 'Time (1/2 Hour Segments)', ylab = 'Probability User is Active')
+points(x.wrapped, Y.padded*0.2, pch = 16, cex = 0.1)
+dev.off()
+
+predict <- predict(mod.padded, type = 'response')[(1+prepost.pad.amount):(ncol(dat.padded) - prepost.pad.amount)]
+vals.pred <- vector()
+for(i in 1:336){
+  vals.pred[i] <- as.numeric(predict[i])
+}
+allvals <- data.frame(index = c(1:336), pred = vals.pred)
+write.table(allvals, file=sprintf("predTrain-%s.txt", which.user), row.names=FALSE, col.names=FALSE)
+}
+
+```
+
+

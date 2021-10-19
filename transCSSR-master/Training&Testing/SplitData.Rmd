@@ -1,0 +1,35 @@
+---
+title: "Splitting Data for Traning and Testing"
+author: Odalys Barrientos
+output: html_notebook
+---
+
+```{r}
+#getwd()
+user.index <- c(1:136)
+data <- Sys.glob("/Users/odalysbar/Documents/HonorsThesis/HonorsThesis-TikTok/BinSeq-MatrixWSpaces/*")
+Train <- vector()
+Test <- vector()
+
+for(n in 1:length(data)){
+#for(n in c(1)){
+  mat <- read.delim(data[n])
+  
+  Train <- vector()
+  Test <- vector()
+  for(i in 1:104){
+    Train[i] <- paste0(mat[i,], sep="", collapse = "") 
+    Train[i] <- gsub(" ", "", Train[i]) 
+  }
+  writeLines(Train, sprintf("Train-%s.txt", user.index[n]), sep = "\n")
+
+  for(i in 105:118){
+    Test[i-104] <- paste0(mat[i,], sep="",collapse = "") 
+    Test[i-104] <- gsub(" ", "", Test[i-104]) 
+  }
+  writeLines(Test,sprintf("Test-%s.txt", user.index[n]), sep = "\n")
+
+}
+
+```
+

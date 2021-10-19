@@ -1,0 +1,153 @@
+---
+title: "Demo Choosing Smoothing Parameter for `gam()` Using Cross-validation"
+author: "David Darmon"
+date: "21 September 2021"
+---
+
+# Set Up Parallel Cluster for Faster Computation
+
+```{r, message = FALSE}
+# install.packages('doParallel')
+
+library(doParallel)
+cl <- makeCluster(8)
+registerDoParallel(cl)
+```
+
+# Load in One User's Data to Demonstrate
+
+```{r}
+which.user <- 63
+
+# Read in by-week data as data.frame.
+
+dat <- read.table(sprintf('/Users/odalysbar/Documents/HonorsThesis/HonorsThesis-TikTok/BinSeq-MatrixWSpaces/matrix-%g.txt', which.user), sep = ' ', header = FALSE)
+
+# Convert to matrix
+
+dat <- data.matrix(dat)
+
+# Take transpose to make column-oriented (one week per column), so 
+# can flatten easily into long vector.
+
+Y <- t(dat)
+
+# Flatten matrix to long vector.
+
+dim(Y) <- NULL
+
+# Get out design points as clock times.
+
+x <- rep(1:ncol(dat), nrow(dat))
+```
+
+# Show Activity Over Time and Within Weeks
+
+```{r}
+par(mfrow = c(1, 2))
+
+plot(Y, pch = 16, cex = 0.1)
+plot(x, Y, pch = 16, cex = 0.1)
+```
+
+# Select Smoothing Parameter Using Cross-validation
+
+```{r}
+library(gam)
+```
+
+```{r}
+source('cv-clock-gam.R')
+
+cv.out <- cv.clock.gam(dat)
+```
+
+# Show Cross-validated Negative Log-likelihood as a Function of the Smoothing Parameter
+
+```{r, warning = FALSE}
+plot(cv.out$spars, cv.out$negative.LLs, 
+     xlab = 'Smoothing Parameter',
+     ylab = 'CV-ed Negative Log-Likelihood')
+abline(v = cv.out$spar.star)
+```
+
+# Fit the GAM at the Optimal Smoothing Parameter
+
+```{r, warning = FALSE}
+mod.unpadded <- gam(Y ~ s(x, spar = cv.out$spar.star), family = binomial)
+
+plot(predict(mod.unpadded, type = 'response')[1:ncol(dat)], type = 'l', ylim = c(0, 0.2),
+     xlab = 'Time (1/2 Hour Segments)', ylab = 'Probability User is Active')
+points(x, Y*0.2, pch = 16, cex = 0.1)
+
+# Add smoothing spline fit via least-squares for comparison
+lines(smooth.spline(x, Y), col = 'red', lty = 2)
+```
+
+# Demo Left- and Right-Padding
+
+## Pad the data
+
+```{r}
+# dat <- matrix(rep(1:(336*5)), nrow = 5, ncol = 336, byrow = TRUE) # Test case checking the padding
+
+prepost.pad.amount <- 48
+
+dat.padded <- cbind(matrix(0, nrow = nrow(dat), ncol = prepost.pad.amount),
+                    dat,
+                    matrix(0, nrow = nrow(dat), ncol = prepost.pad.amount))
+
+dat.padded[2:nrow(dat.padded), 1:(prepost.pad.amount)] <- 
+  dat[1:(nrow(dat)-1), (ncol(dat) - prepost.pad.amount + 1):ncol(dat)]
+
+dat.padded[1:(nrow(dat.padded)-1), (ncol(dat.padded)-prepost.pad.amount + 1):ncol(dat.padded)] <-
+  dat[2:(nrow(dat.padded)), 1:prepost.pad.amount]
+
+# Drop first and last week, since 0-padded:
+
+dat.padded <- dat.padded[2:(nrow(dat.padded) - 1), ]
+
+Y.padded <- t(dat.padded)
+
+dim(Y.padded) <- NULL
+
+Y.padded
+View(dat.padded)
+```
+
+## Fit the Model and Plot
+
+```{r}
+cv.out <- cv.clock.gam(dat.padded)
+```
+
+```{r}
+x.wrapped <- rep(cv.out$clock.ticks, nrow(dat.padded))
+
+mod.padded <- gam(Y.padded ~ s(x.wrapped, spar = cv.out$spar.star), family = binomial)
+
+plot(predict(mod.padded, type = 'response')[(1+prepost.pad.amount):(ncol(dat.padded) - prepost.pad.amount)], type = 'l', ylim = c(0, 0.2),
+     xlab = 'Time (1/2 Hour Segments)', ylab = 'Probability User is Active')
+points(x.wrapped, Y.padded*0.2, pch = 16, cex = 0.1)
+```
+
+## Compare Unpadded and Padded Fits
+
+```{r}
+fit.without.padding <- predict(mod.unpadded, type = 'response')[1:ncol(dat)]
+
+fit.with.padding <- predict(mod.padded, type = 'response')[(1+prepost.pad.amount):(ncol(dat.padded) - prepost.pad.amount)]
+```
+
+```{r}
+plot(fit.without.padding, type = 'l', col = 'red',
+     xlab = 'Time (1/2 Hour Segments)', ylab = 'Probability User is Active',
+     ylim = c(0, 0.2))
+lines(fit.with.padding, type = 'l', col = 'blue')
+legend('topright', legend = c('Unwrapped', 'Wrapped'), col = c('red', 'blue'), lty = 1)
+```
+
+
+
+
+
