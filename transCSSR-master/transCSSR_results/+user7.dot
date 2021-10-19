@@ -9,8 +9,10 @@ edge [fontsize = 24];
 node [fontname = "CMU Serif Roman"];
 graph [fontname = "CMU Serif Roman"];
 edge [fontname = "CMU Serif Roman"];
-A -> A [label = "0|0:0.9978001972236972\l"];
-A -> B [label = "1|0:0.0021998027763028144\l"];
-B -> A [label = "0|0:0.8787878787878788\l"];
-B -> B [label = "1|0:0.12121212121212122\l"];
+A -> A [label = "0|0:0.977358945023183\l"];
+A -> B [label = "1|0:0.022641054976817006\l"];
+B -> B [label = "1|0:0.11860718171926006\l"];
+B -> C [label = "0|0:0.8813928182807399\l"];
+C -> A [label = "0|0:0.928395061728395\l"];
+C -> B [label = "1|0:0.07160493827160494\l"];
 }

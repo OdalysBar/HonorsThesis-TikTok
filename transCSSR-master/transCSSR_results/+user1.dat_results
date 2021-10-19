@@ -2,8 +2,8 @@ State number: 0
 0, 0
 00, 00
 distribution: 
-P(0|0,state) = 0.9788644949935272	
-P(1|0,state) = 0.02113550500647275	
+P(0|0,state) = 0.9800227286320953	
+P(1|0,state) = 0.019977271367904777	
 transitions: T((0, 0)) = 0	T((0, 1)) = 1	
 P(State) = ...
 
@@ -12,16 +12,16 @@ State number: 1
 00, 01
 00, 11
 distribution: 
-P(0|0,state) = 0.872784150156413	
-P(1|0,state) = 0.12721584984358708	
+P(0|0,state) = 0.8649318463444857	
+P(1|0,state) = 0.13506815365551425	
 transitions: T((0, 0)) = 2	T((0, 1)) = 1	
 P(State) = ...
 
 State number: 2
 00, 10
 distribution: 
-P(0|0,state) = 0.955794504181601	
-P(1|0,state) = 0.04420549581839905	
+P(0|0,state) = 0.9570200573065902	
+P(1|0,state) = 0.04297994269340974	
 transitions: T((0, 0)) = 0	T((0, 1)) = 1	
 P(State) = ...
 

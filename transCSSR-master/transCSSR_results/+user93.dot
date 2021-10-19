@@ -1,0 +1,39 @@
+digraph  {
+size = "6,8.5";
+ratio = "fill";
+node
+[shape = circle];
+node [fontsize = 24];
+node [penwidth = 5];
+edge [fontsize = 24];
+node [fontname = "CMU Serif Roman"];
+graph [fontname = "CMU Serif Roman"];
+edge [fontname = "CMU Serif Roman"];
+A -> A [label = "0|0:0.9914020963086738\l"];
+A -> N [label = "1|0:0.008597903691326143\l"];
+B -> A [label = "0|0:0.9496644295302014\l"];
+B -> N [label = "1|0:0.050335570469798654\l"];
+C -> I [label = "0|0:0.5\l"];
+C -> N [label = "1|0:0.5\l"];
+D -> B [label = "0|0:0.9675324675324676\l"];
+D -> N [label = "1|0:0.032467532467532464\l"];
+E -> C [label = "0|0:1.0\l"];
+F -> J [label = "1|0:0.21052631578947367\l"];
+F -> L [label = "0|0:0.7894736842105263\l"];
+G -> K [label = "1|0:1.0\l"];
+H -> D [label = "0|0:0.9447852760736196\l"];
+H -> P [label = "1|0:0.05521472392638037\l"];
+I -> E [label = "0|0:1.0\l"];
+J -> F [label = "0|0:1.0\l"];
+K -> C [label = "1|0:1.0\l"];
+L -> H [label = "0|0:0.9449275362318841\l"];
+L -> N [label = "1|0:0.05507246376811594\l"];
+M -> J [label = "1|0:0.043478260869565216\l"];
+M -> L [label = "0|0:0.9565217391304348\l"];
+N -> M [label = "0|0:0.9696048632218845\l"];
+N -> O [label = "1|0:0.030395136778115502\l"];
+O -> G [label = "1|0:0.1\l"];
+O -> M [label = "0|0:0.9\l"];
+P -> M [label = "0|0:0.9444444444444444\l"];
+P -> N [label = "1|0:0.05555555555555555\l"];
+}

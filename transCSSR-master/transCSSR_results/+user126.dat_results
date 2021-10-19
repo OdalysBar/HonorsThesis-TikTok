@@ -1,0 +1,10 @@
+State number: 0
+, 
+0, 0
+0, 1
+distribution: 
+P(0|0,state) = 0.9999141483516484	
+P(1|0,state) = 8.585164835164836e-05	
+transitions: T((0, 0)) = 0	T((0, 1)) = 0	
+P(State) = ...
+
