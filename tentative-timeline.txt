@@ -4,7 +4,7 @@ Over the next week (10/11 - 10/18)
 
 	1. Match the user number to user handle. @done
 
-	2. Redo transCSSR with model selection for the L parameter.
+	2. Redo transCSSR with model selection for the L parameter. @todo
 
 	3. Split the data into a training and a testing set. @done
 
@@ -14,6 +14,7 @@ Over the next week (10/11 - 10/18)
 
 	4. Train the models for both epsilon-machine and seasonal on the training set.
 		- @done for seasonal
+		- @todo for epsilon-machine
 
 (10/18-10/25)
 
@@ -22,11 +23,11 @@ Over the next week (10/11 - 10/18)
 		Get this for free from the GAM. @done
 
 		Get this from transCSSR.
-			Dave will show Odalys how to do this.
+			Dave will show Odalys how to do this. @done
 
-	6. Evaluate those probabilities on the testing set.
+	6. Evaluate those probabilities on the testing set. 
 
-		Dave will explain how to do this.
+		Dave will explain how to do this. @done
 
 (10/25-11/1)
 
