@@ -13,7 +13,7 @@ Test <- vector()
 
 for(n in 1:length(data)){
 #for(n in c(1)){
-  mat <- read.delim(data[n])
+  mat <- read.delim(data[n], header=FALSE)
   
   Train <- vector()
   Test <- vector()
@@ -30,6 +30,11 @@ for(n in 1:length(data)){
   writeLines(Test,sprintf("Test-%s.txt", user.index[n]), sep = "\n")
 
 }
+
+```
+
+```{r}
+
 
 ```
 
