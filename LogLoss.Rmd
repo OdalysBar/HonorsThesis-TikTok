@@ -17,6 +17,7 @@ Negative = GAM is better
 
 ```{r}
 LL$Difference <- LL$LLGAM-LL$LLCSSR
+LL$User <- c(1:136)
 
 hist(LL$Difference, breaks= "FD")
 rug(LL$Difference)
@@ -36,11 +37,48 @@ ggplot(LL, aes(x=Difference, y = ..density..,group = category, col = category)) 
 
 ```{r}
 library(mosaic)
-library(ggplot2)
+library(ggpubr)
 
-gf_boxplot(~Difference|category, data=LL)
+favstats(~Difference|category, data = LL)
+favstats(~Difference, data = LL) # Overall
 
-ggline(LL, x="category", y="Difference", add="mean_se")
+ggline(LL, x="category", y="Difference", add="mean_se") # famous is less negative 
+# famous users more cssr
 
+# NAs are from one Viral and one Foryou
+LL <- na.omit(LL)
+
+which(LL$Difference == min(LL$Difference))
+LL$User[3]
+LL$category[3] # viral most negative GAM is better
+
+which(LL$Difference == max(LL$Difference))
+LL$User[117]
+LL$category[117] # ForYou most postive CSSR is better
+```
+```{r}
+which(LL$Difference > 0.15) # "outliers" VERY positive differences CSSR Better
+LL$category[117] #ForYou
+LL$category[130] # Viral
+```
+
+```{r}
+CSSR.Better <- which(LL$Difference > 0)
+
+sum(LL$category[CSSR.Better] == "Viral")/sum(LL$category == "Viral")
+sum(LL$category[CSSR.Better] == "Famous")/sum(LL$category == "Famous") # mostly Famous users
+sum(LL$category[CSSR.Better] == "ForYou")/sum(LL$category == "ForYou")
+
+GAM.Better <- which(LL$Difference < 0)
+
+sum(LL$category[GAM.Better] == "Viral")/sum(LL$category == "Viral")
+sum(LL$category[GAM.Better] == "Famous")/sum(LL$category == "Famous") 
+sum(LL$category[GAM.Better] == "ForYou")/sum(LL$category == "ForYou") # mostly ForYou users
+
+sum(LL$category == "Viral")
+sum(LL$category == "Famous")
+sum(LL$category == "ForYou")
+
+# Overall the majority of users fit CSSR better
 ```
 

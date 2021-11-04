@@ -1,0 +1,59 @@
+---
+title: "Information Dynamic Measures"
+author: Odalys Barrientos
+output: html_notebook
+---
+
+```{r}
+library(readr)
+InfoM <- read_csv("transCSSR-master/InfoMeasuresData.csv")
+#View(InfoM)
+
+UserIDs <- read_csv("Username-IDs/UserIDs.csv")
+
+InfoM$category <- UserIDs$category
+```
+
+```{r}
+library(mosaic)
+
+favstats(InfoM$Hmu)
+favstats(~Hmu|category, data = InfoM)
+
+favstats(InfoM$E)
+favstats(~E|category, data = InfoM)
+
+favstats(InfoM$Cmu)
+favstats(~Cmu|category, data = InfoM)
+```
+
+```{r}
+hist(InfoM$Hmu, breaks= "FD")
+rug(InfoM$Hmu)
+
+hist(InfoM$E, breaks= "FD", xlim=c(0, 1))
+rug(InfoM$E)
+
+hist(InfoM$Cmu, breaks= "FD")
+rug(InfoM$Cmu)
+
+```
+
+```{r}
+library(ggplot2)
+ggplot(InfoM, aes(x=category, y = Hmu, group = category, col = category)) + geom_boxplot()
+
+ggplot(InfoM, aes(x=category, y = E, group = category, col = category)) + geom_boxplot()
+
+ggplot(InfoM, aes(x=category, y = Cmu, group = category, col = category)) + geom_boxplot()
+```
+
+```{r}
+ggplot(InfoM, aes(x=Hmu, y = ..density.. , group = category, col = category)) + geom_density()
+
+ggplot(InfoM, aes(x=E, y = ..density.. , group = category, col = category)) + geom_density()
+
+ggplot(InfoM, aes(x=Cmu, y = ..density.. , group = category, col = category)) + geom_density()
+
+```
+
