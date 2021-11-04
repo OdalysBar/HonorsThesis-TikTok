@@ -13,6 +13,19 @@ UserIDs <- read_csv("Username-IDs/UserIDs.csv")
 
 InfoM$category <- UserIDs$category
 ```
+```{r}
+# Entropy: How random? (1 = random)
+hist(InfoM$Hmu, breaks= "FD")
+rug(InfoM$Hmu)
+
+# Memory: How much info is shared from the past"?
+hist(InfoM$E, breaks= "FD")
+rug(InfoM$E)
+
+# Complicated: How many bits of the past do we have to remember to predict the future?
+hist(InfoM$Cmu, breaks= "FD")
+rug(InfoM$Cmu)
+```
 
 ```{r}
 library(mosaic)
@@ -27,17 +40,6 @@ favstats(InfoM$Cmu)
 favstats(~Cmu|category, data = InfoM)
 ```
 
-```{r}
-hist(InfoM$Hmu, breaks= "FD")
-rug(InfoM$Hmu)
-
-hist(InfoM$E, breaks= "FD", xlim=c(0, 1))
-rug(InfoM$E)
-
-hist(InfoM$Cmu, breaks= "FD")
-rug(InfoM$Cmu)
-
-```
 
 ```{r}
 library(ggplot2)
@@ -55,5 +57,30 @@ ggplot(InfoM, aes(x=E, y = ..density.. , group = category, col = category)) + ge
 
 ggplot(InfoM, aes(x=Cmu, y = ..density.. , group = category, col = category)) + geom_density()
 
+```
+```{r}
+which(max(InfoM$Hmu) == InfoM$Hmu) # max entropy rate in this sample = 0.327
+InfoM$category[14] # Famous 
+# by looking at favstats "famous" users had the highest average entropy rate meaning they should be the hardest to predict
+# they are more random than the other category of users
+
+which(max(InfoM$E) == InfoM$E) 
+InfoM$category[9] # Famous
+# by looking at favstats "famous" users had the highest average "memory??" meaning they had the most info shared between the past and the future
+
+which(max(InfoM$Cmu) == InfoM$Cmu) 
+InfoM$category[4] # ForYou
+# by looking at favstats "ForYou" users had the highest average "Cmu" meaning they had the most complicated/ sophisticated models (had to look further in the past to predict)
+```
+
+```{r}
+plot(InfoM$Hmu, InfoM$Cmu)
+
+
+library(e1071); library(ggplot2)
+
+qplot(Hmu, Cmu, colour = category, data = InfoM)
+qplot(Hmu, E, colour = category, data = InfoM)
+qplot(Cmu, E, colour = category, data = InfoM)
 ```
 

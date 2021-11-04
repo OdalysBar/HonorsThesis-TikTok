@@ -82,3 +82,8 @@ sum(LL$category == "ForYou")
 # Overall the majority of users fit CSSR better
 ```
 
+```{r}
+ggplot(LL, aes(x=category, y = Difference, group = category, col = category)) + 
+geom_point()
+```
+
