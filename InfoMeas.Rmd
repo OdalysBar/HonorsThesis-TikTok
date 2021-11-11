@@ -51,11 +51,11 @@ ggplot(InfoM, aes(x=category, y = Cmu, group = category, col = category)) + geom
 ```
 
 ```{r}
-ggplot(InfoM, aes(x=Hmu, y = ..density.. , group = category, col = category)) + geom_density()
+ggplot(InfoM, aes(x=Hmu, y = ..density.. , group = category, col = category)) + geom_histogram(bins=10) + facet_grid(~category)
 
-ggplot(InfoM, aes(x=E, y = ..density.. , group = category, col = category)) + geom_density()
+ggplot(InfoM, aes(x=E, y = ..density.. , group = category, col = category)) + geom_histogram(bins=10) + facet_grid(~category)
 
-ggplot(InfoM, aes(x=Cmu, y = ..density.. , group = category, col = category)) + geom_density()
+ggplot(InfoM, aes(x=Cmu, y = ..density.. , group = category, col = category)) + geom_histogram(bins=10) + facet_grid(~category)
 
 ```
 ```{r}

@@ -1,0 +1,107 @@
+---
+title: "Boot Test"
+output: html_notebook
+---
+
+```{r}
+library(readr)
+
+UserIDs <- read_csv("Username-IDs/UserIDs.csv")
+viral.users <- which(LL$category == "Viral")
+
+InfoM <- read_csv("transCSSR-master/InfoMeasuresData.csv")
+InfoM$category <- UserIDs$category
+InfoM <- InfoM[which(InfoM$category == "Famous" | InfoM$category == "ForYou" ),]
+
+LL <- read_csv("transCSSR-master/LogLossDat.csv")
+LL$category <- UserIDs$category
+LL <- LL[which(LL$category == "Famous" | LL$category == "ForYou" ),]
+
+
+
+```
+
+# LLGAM
+```{r}
+library(MKinfer)
+library(mosaic)
+
+boot.t.test(LLGAM ~ category, data=LL)
+```
+bootstrapped p-value = 0.1328 
+95 percent bootstrap percentile confidence interval:
+ -0.006077797  0.049560263
+sample estimates: 
+mean in group Famous | mean in group ForYou 
+    0.08775446       |    0.06642447 
+
+Mean in group Famous is slightly higher (by 0.021). In this sample, the famous group has a higher log loss as opposed to the ForYou group. We do not have statistically significant pvalue, thus there is not enough evidence that there is a true difference between the log loss for the GAM model for the famous vs ForYou group. 
+
+# LLCSSR
+```{r}
+boot.t.test(LLCSSR ~ category, data=LL)
+```
+bootstrapped p-value = 0.1064 
+95 percent bootstrap percentile confidence interval:
+ -0.003564687  0.039631635
+sample estimates:
+mean in group Famous | mean in group ForYou 
+          0.07097575 |      0.05374919 
+          
+Mean in group Famous is slightly higher (by 0.017)(could this inidcate the famous group is a harder group to predict???). 
+In this sample, the famous group has a higher log loss as opposed to the ForYou group. We do not have statistically significant pvalue, thus there is not enough evidence that there is a true difference between the log loss for the CSSR model for the famous vs ForYou groups. 
+
+#Hmu : Entroy Rate (Randomness (1 = random))
+```{r}
+boot.t.test(Hmu ~ category, data = InfoM)
+```
+bootstrapped p-value = 0.5461 
+95 percent bootstrap percentile confidence interval:
+ -0.02135636  0.04021306
+sample estimates:
+mean in group Famous  | mean in group ForYou 
+          0.09467219  |     0.08538331 
+          
+Mean in group Famous is slightly higher (by 0.009)
+(the difference is basically nothing but in this sample famous users have a slighly higher entropy rate so their behavior is slightly more random than ForYou users) 
+
+In this sample, the famous group has a higher entropy rate as opposed to the ForYou group. We do not have statistically significant pvalue, thus there is not enough evidence that there is a true difference between the entropy rate for the famous vs ForYou groups. 
+
+# E: Memory
+```{r}
+boot.t.test(E ~ category, data = InfoM)
+```
+bootstrapped p-value = 0.7361 
+95 percent bootstrap percentile confidence interval:
+ -0.3706005  0.5630562
+sample estimates:
+mean in group Famous | mean in group ForYou 
+           0.2722178 |    0.1942425 
+
+(the difference is basically is vert small but famous users tend to need more memory than forYou users)
+In this sample, the famous group has a higher E as opposed to the ForYou group. We do not have statistically significant pvalue, thus there is not enough evidence that there is a true difference between E for the famous vs ForYou groups. 
+
+# Cmu: 
+```{r}
+boot.t.test(Cmu ~ category, data = InfoM)
+```
+bootstrapped p-value = 0.3852 
+95 percent bootstrap percentile confidence interval:
+ -0.2930788  0.1032197
+sample estimates:
+mean in group Famous | mean in group ForYou 
+           0.2380611 |   0.3204938 
+           
+Mean in group ForYou is slightly higher (by 0.082)
+The difference is small but in this sample of users we can see that the users in the ForYou group have slightly more complaicated models than famous users. 
+
+In this sample, the foryou group has a higher Cmu as opposed to the famous group. We do not have statistically significant pvalue, thus there is not enough evidence that there is a true difference between the entropy rate for the famous vs ForYou groups. 
+
+
+# Overall
+
+There are no statistically significant differences between the famous group and foryou group when looking at log loss (tells us which model fits best) and looking and the information measures (from CSSR). 
+
+From sample means we can see that in our sample famous users have more random behavior and less complicated models where foryou users have less random behavior and more complicated models. 
+Also famous groups have to use more "memory" (E) than foryou users in order to model the users behavior. 
+
