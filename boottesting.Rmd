@@ -8,7 +8,7 @@ output: html_notebook
 library(readr)
 
 UserIDs <- read_csv("Username-IDs/UserIDs.csv")
-viral.users <- which(LL$category == "Viral")
+viral.users <- which(UserIDs$category == "Viral")
 
 InfoM <- read_csv("transCSSR-master/InfoMeasuresData.csv")
 InfoM$category <- UserIDs$category
@@ -36,7 +36,7 @@ diff.medians <- function(x, i){
 ```
 
 # LL Differences : t test
-```{r}
+```{r, message = FALSE}
 library(MKinfer)
 library(mosaic)
 library(boot)
@@ -61,7 +61,11 @@ scoresbygroup <- scoresbygroup[!is.na(scoresbygroup$score),]
 
 b <- boot(data = scoresbygroup, statistic = diff.medians, R=2000, strata = scoresbygroup$group)
 
-boot.ci(b)
+boot.ci(b, type = 'bca')
+
+diff.medians(scoresbygroup, i = 1:nrow(scoresbygroup))
+
+aggregate(score ~ group, data = scoresbygroup, FUN = median)$score
 ```
 # LLGAM: Mean
 ```{r}
@@ -85,7 +89,11 @@ scoresbygroup <- scoresbygroup[!is.na(scoresbygroup$score),]
 
 b <- boot(data = scoresbygroup, statistic = diff.medians, R=2000, strata = scoresbygroup$group)
 
-boot.ci(b)
+boot.ci(b, type = 'bca')
+
+diff.medians(scoresbygroup, i = 1:nrow(scoresbygroup))
+
+aggregate(score ~ group, data = scoresbygroup, FUN = median)$score
 ```
 
 # LLCSSR
@@ -110,7 +118,11 @@ scoresbygroup <- scoresbygroup[!is.na(scoresbygroup$score),]
 
 b <- boot(data = scoresbygroup, statistic = diff.medians, R=2000, strata = scoresbygroup$group)
 
-boot.ci(b)
+boot.ci(b, type = 'bca')
+
+diff.medians(scoresbygroup, i = 1:nrow(scoresbygroup))
+
+aggregate(score ~ group, data = scoresbygroup, FUN = median)$score
 ```
 
 #Hmu : Entroy Rate (Randomness (1 = random))
@@ -137,7 +149,11 @@ scoresbygroup <- scoresbygroup[!is.na(scoresbygroup$score),]
 
 b <- boot(data = scoresbygroup, statistic = diff.medians, R=2000, strata = scoresbygroup$group)
 
-boot.ci(b)
+boot.ci(b, type = 'bca')
+
+diff.medians(scoresbygroup, i = 1:nrow(scoresbygroup))
+
+aggregate(score ~ group, data = scoresbygroup, FUN = median)$score
 ```
 
 # E: Memory
@@ -162,7 +178,11 @@ scoresbygroup <- scoresbygroup[!is.na(scoresbygroup$score),]
 
 b <- boot(data = scoresbygroup, statistic = diff.medians, R=2000, strata = scoresbygroup$group)
 
-boot.ci(b)
+boot.ci(b, type = 'bca')
+
+diff.medians(scoresbygroup, i = 1:nrow(scoresbygroup))
+
+aggregate(score ~ group, data = scoresbygroup, FUN = median)$score
 ```
 
 # Cmu: 
