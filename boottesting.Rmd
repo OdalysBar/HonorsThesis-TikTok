@@ -125,7 +125,7 @@ diff.medians(scoresbygroup, i = 1:nrow(scoresbygroup))
 aggregate(score ~ group, data = scoresbygroup, FUN = median)$score
 ```
 
-#Hmu : Entroy Rate (Randomness (1 = random))
+# Hmu : Entroy Rate (Randomness (1 = random))
 ```{r}
 boot.t.test(Hmu ~ category, data = InfoM)
 ```
