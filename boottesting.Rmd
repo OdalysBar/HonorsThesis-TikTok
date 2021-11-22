@@ -124,6 +124,27 @@ diff.medians(scoresbygroup, i = 1:nrow(scoresbygroup))
 
 aggregate(score ~ group, data = scoresbygroup, FUN = median)$score
 ```
+## Bootstrapped Confidence Curve
+
+```{r}
+# Uncomment to install:
+
+# devtools::install_github('ddarmon/clp')
+```
+
+
+```{r, message = FALSE}
+library(clp)
+```
+
+```{r}
+boot.out <- clp::bcaboot(scoresbygroup, diff.medians, stratified = TRUE, B = 10000)
+
+cfs <- clp::conffuns.from.bcaboot(boot.out)
+
+display.cconf(cfs, xlab = 'Median(Famous) - Median(Foryou), Entropy Rate')
+```
+
 
 # Hmu : Entropy Rate (Randomness (1 = random))
 ```{r}
@@ -141,6 +162,15 @@ Mean in group Famous is slightly higher (by 0.009)
 
 In this sample, the famous group has a higher entropy rate as opposed to the ForYou group. We do not have statistically significant pvalue, thus there is not enough evidence that there is a true difference between the entropy rate for the famous vs ForYou groups.
 
+## Confidence Curve for Difference in Means
+
+```{r}
+clp::t_test.boot.conf(scoresbygroup$score[scoresbygroup$group == 1],
+                 scoresbygroup$score[scoresbygroup$group == 2],
+                 B = 10000)
+```
+
+
 # E: Median
 ```{r}
 scoresbygroup <- data.frame(score = InfoM$E, group = ifelse(InfoM$category=="Famous",1, 2))
@@ -156,6 +186,17 @@ diff.medians(scoresbygroup, i = 1:nrow(scoresbygroup))
 aggregate(score ~ group, data = scoresbygroup, FUN = median)$score
 ```
 
+## Bootstrapped Confidence Curve
+
+```{r}
+boot.out <- clp::bcaboot(scoresbygroup, diff.medians, stratified = TRUE, B = 10000)
+
+cfs <- clp::conffuns.from.bcaboot(boot.out)
+
+display.cconf(cfs, xlab = 'Median(Famous) - Median(Foryou), Excess Entropy')
+```
+
+
 # E: Memory
 ```{r}
 boot.t.test(E ~ category, data = InfoM)
@@ -170,6 +211,14 @@ mean in group Famous | mean in group ForYou
 (the difference is basically is very small but famous users tend to need more memory than forYou users)
 In this sample, the famous group has a higher E as opposed to the ForYou group. We do not have statistically significant pvalue, thus there is not enough evidence that there is a true difference between E for the famous vs ForYou groups. 
 
+## Confidence Curve for Difference in Means
+
+```{r}
+clp::t_test.boot.conf(scoresbygroup$score[scoresbygroup$group == 1],
+                 scoresbygroup$score[scoresbygroup$group == 2],
+                 B = 10000)
+```
+
 # Cmu: Median
 ```{r}
 scoresbygroup <- data.frame(score = InfoM$Cmu, group = ifelse(InfoM$category=="Famous",1, 2))
@@ -183,6 +232,16 @@ boot.ci(b, type = 'bca')
 diff.medians(scoresbygroup, i = 1:nrow(scoresbygroup))
 
 aggregate(score ~ group, data = scoresbygroup, FUN = median)$score
+```
+
+## Bootstrapped Confidence Curve
+
+```{r}
+boot.out <- clp::bcaboot(scoresbygroup, diff.medians, stratified = TRUE, B = 10000)
+
+cfs <- clp::conffuns.from.bcaboot(boot.out)
+
+display.cconf(cfs, xlab = 'Median(Famous) - Median(Foryou), Statistical Complexity')
 ```
 
 # Cmu: 
@@ -201,6 +260,13 @@ The difference is small but in this sample of users we can see that the users in
 
 In this sample, the foryou group has a higher Cmu as opposed to the famous group. We do not have statistically significant pvalue, thus there is not enough evidence that there is a true difference between the entropy rate for the famous vs ForYou groups. 
 
+## Confidence Curve for Difference in Means
+
+```{r}
+clp::t_test.boot.conf(scoresbygroup$score[scoresbygroup$group == 1],
+                 scoresbygroup$score[scoresbygroup$group == 2],
+                 B = 10000)
+```
 
 # Overall
 
